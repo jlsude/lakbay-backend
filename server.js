@@ -12,13 +12,14 @@ const lakbayContents = require('./routes/api/lakbaycontents.js')
 
 // this allows cross-origin XMLHttpRequest (XHR) request
 app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8082');
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8081');
     next();
 });
 
+
 // this enables CORS for all routes
 app.use(cors({
-    origin: 'http://localhost:8082',
+    origin: ['http://localhost:8081', 'http://192.168.1.22:8081'],
     allowedHeaders: 'Content-Type'
 }));
 
