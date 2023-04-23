@@ -6,6 +6,36 @@ var dbConn = require('../../config/db');
 
 const jwt = require('jsonwebtoken');
 
+//--------------- User Profile TESTING -----------------
+//@routes POST http:localhost:7000/home/u/userhistory
+//@desc outputs user profile
+//@access unique to users
+router.get('/u/userprofile', (req, res) => {
+    const authorizationHeader = req.headers.authorization;
+    if (!authorizationHeader) {
+      res.status(401).json({ success: false, msg: 'Authorization header is missing' });
+      return;
+    }
+  
+    const token = authorizationHeader.split(' ')[1];
+    if (!token) {
+      res.status(401).json({ success: false, msg: 'JWT must be provided' });
+      return;
+    }
+  
+    try {
+      const decodedToken = jwt.verify(token, process.env.SECRET_TOKEN);
+      console.log(decodedToken.data['user_id']);
+      console.log(decodedToken.data['user_email']);
+      const sqlQuery = `SELECT * FROM usertable WHERE user_id = ${decodedToken.data['user_id']}`;
+      dbConn.query(sqlQuery, function (error, results, fields) {
+        if (error) throw error;
+        res.status(200).json(results);
+      });
+    } catch (err) {
+      res.status(401).json({ success: false, msg: 'Invalid JWT' });
+    }
+  });
 
 //--------------- User History -----------------
 //@routes POST http:localhost:7000/home/u/userhistory

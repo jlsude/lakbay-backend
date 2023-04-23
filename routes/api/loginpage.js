@@ -117,7 +117,7 @@ router.post('/u/login/', cors(), (req, res) => {
 		token = jwt.sign(
 			{ data: data },
 			process.env.SECRET_TOKEN,
-			{ expiresIn: '0.10h' }
+			{ expiresIn: '10m' }
 		)
 
 		return res.status(200).json({
