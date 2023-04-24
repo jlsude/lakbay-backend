@@ -12,40 +12,40 @@ const qrRoutes = require('./routes/api/qrgeneration.js');
 const scanLakbay = require('./routes/api/scanlakbay.js');
 const lakbayContents = require('./routes/api/lakbaycontents.js');
 
-// // CORS configuration
-// app.use(cors({
-//   origin: 'https://192.168.1.12:8081',
-//   methods: ['GET', 'PUT', 'POST', 'DELETE'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true,
-//   secure: true
-// }));
-
-
-
-// this allows cross-origin XMLHttpRequest (XHR) request
-app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://192.168.1.12:8081');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-        // intercepts OPTIONS method
-        if ('OPTIONS' === req.method) {
-            // respond with 200
-            res.sendStatus(200);
-          } else {
-            // move on
-            next();
-          }
-      
-  });
-
-
-// this enables CORS for all routes
+// CORS configuration
 app.use(cors({
-    origin: ['http://192.168.1.12:8081'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: ['http://192.168.1.12:8081', 'http://localhost:8081'],
+  methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  secure: true
 }));
+
+
+
+// // this allows cross-origin XMLHttpRequest (XHR) request
+// app.use(function(req, res, next) {
+//     res.setHeader('Access-Control-Allow-Origin', 'https://192.168.1.12:8081');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     res.setHeader('Access-Control-Allow-Credentials', true);
+//         // intercepts OPTIONS method
+//         if ('OPTIONS' === req.method) {
+//             // respond with 200
+//             res.sendStatus(200);
+//           } else {
+//             // move on
+//             next();
+//           }
+      
+//   });
+
+
+// // this enables CORS for all routes
+// app.use(cors({
+//     origin: ['https://192.168.1.12:8081'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
 
 
 
