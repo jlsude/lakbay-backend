@@ -43,7 +43,11 @@ router.get('/u/userprofile', (req, res) => {
 //@access unique to users
 
 router.get('/u/userhistory', (req, res) => {
-
+    const authorizationHeader = req.headers.authorization;
+    if (!authorizationHeader) {
+      res.status(401).json({ success: false, msg: 'Authorization header is missing' });
+      return;
+    }
 
     const token = req.headers.authorization.split(' ')[1];
     if (!token){
@@ -54,7 +58,41 @@ router.get('/u/userhistory', (req, res) => {
     console.log(decodedToken.data['user_id']);
     console.log(decodedToken.data['user_email']);
 
-    sqlQuery = `SELECT * FROM userhistorytable ORDER BY "${decodedToken.data['user_id']}" DESC LIMIT 2`;
+    sqlQuery = `SELECT landmarkTable.landmark_id, landmarkTable.landmark_name, landmarkTable.landmark_city, 
+                landmarkTable.landmark_address, landmarkTable.landmark_region, landmarkTable.landmark_visits,
+                userhistorytable.userhistory_id FROM userHistoryTable INNER JOIN landmarkTable ON userHistoryTable.landmark_id 
+                = landmarkTable.landmark_id WHERE userHistoryTable.user_id = "${decodedToken.data['user_id']}"`;
+    dbConn.query(sqlQuery, function (error, results, fields) {
+        if (error) throw error;
+        res.status(200).json(results);
+        });
+
+})
+
+
+router.post('/u/adduserhistory', (req, res) => {
+    
+    const authorizationHeader = req.headers.authorization;
+    var landmark_id = req.body.landmark_id;
+
+    console.log(authorizationHeader)
+
+    
+    if (!authorizationHeader) {
+      res.status(401).json({ success: false, msg: 'Authorization header is missing' });
+      return;
+    }
+
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token){
+        res.status(200).json({success: false, msg: 'Error, Token was not found'});
+    }
+    const decodedToken = jwt.verify(token,process.env.SECRET_TOKEN);
+
+    console.log(decodedToken.data['user_id']);
+    console.log(decodedToken.data['user_email']);
+
+    sqlQuery = `INSERT INTO userHistoryTable(user_id, landmark_id) VALUES ("${decodedToken.data['user_id']}", ${landmark_id})`;
     dbConn.query(sqlQuery, function (error, results, fields) {
         if (error) throw error;
         res.status(200).json(results);

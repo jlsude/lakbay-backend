@@ -30,9 +30,10 @@ router.post('/a/generate', async (req, res) => {
           console.log(err);
           res.status(500).json({ success: false, error: 'Internal server error' });
         } else {
+          console.log(result.insertId) // QR ID
           console.log(result);
           // If we want to output the signal that generation of qr code is successful, beneficial for front end dev
-          res.status(200).json({ success: true, message: 'QR code generated successfully', qrCodeImage: qrCodeImage });
+          res.status(200).json({ success: true, QRID: result.insertId, message: 'QR code generated successfully', qrCodeImage: qrCodeImage });
         }
       });
     } catch (error) {

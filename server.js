@@ -11,10 +11,11 @@ const homeRoutes = require('./routes/api/home.js');
 const qrRoutes = require('./routes/api/qrgeneration.js');
 const scanLakbay = require('./routes/api/scanlakbay.js');
 const lakbayContents = require('./routes/api/lakbaycontents.js');
+const manageContents = require('./routes/api/Manage.js')
 
 // CORS configuration
 app.use(cors({
-  origin: ['http://192.168.1.12:8081', 'http://localhost:8081'],
+  origin: '*',
   methods: ['GET', 'PUT', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -65,6 +66,7 @@ app.use('/LakbayScan', scanLakbay);
 // admin api
 app.use('/QR', qrRoutes);
 app.use('/Lakbay', lakbayContents);
+app.use('/Manage', manageContents);
 
 app.get('/', (req,res) => res.send('API is running'));
 // const PORT = process.env.PORT || 7000;
@@ -76,6 +78,7 @@ const httpsServer = https.createServer({
   key: fs.readFileSync('server.key'), // This is a self-signed certificate
   cert: fs.readFileSync('server.crt') // generated for testing purposes only
 }, app);
+
 // Start both servers
 const PORT = process.env.PORT || 7000;
 const PORT2 = process.env.PORT || 8000;
