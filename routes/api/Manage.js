@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 
 
+let baseURL = 'http://localhost:7000';
+
 // ---------------------------- Adding Landmark ------------------------------------------------
 
 router.post('/a/add/landmark', (req, res) =>{
@@ -77,7 +79,7 @@ router.post('/a/add/landmarkinfo', (req, res) =>{
 // Define storage for images
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public/images')
+        cb(null, 'assets/LandmarkImages')
 },
 filename: function (req, file, cb) {
     cb(null, Date.now() + '-' + file.originalname)
@@ -98,6 +100,8 @@ const upload = multer({
     storage: storage,
     fileFilter: fileFilter
 })
+
+// -------------------- Performing an Location Image POST Request
 
 router.post('/locations', upload.single('image_src'), async (req, res) => {
     console.log(req.body)
@@ -122,6 +126,7 @@ router.post('/locations', upload.single('image_src'), async (req, res) => {
     }
 });
 
+// -------------------- Performing an Image GET Request using landmark ID
 router.get('/locations/:landmarkid', async (req, res) => {
     const landmarkid = req.params.landmarkid;
 
@@ -133,7 +138,7 @@ router.get('/locations/:landmarkid', async (req, res) => {
         
         if (results.length > 0) {
             const imagePath = results[0].image_src;
-            res.sendFile(imagePath, { root: 'public/images' });
+            res.sendFile(imagePath, { root: 'assets/LandmarkImages' });
         } else {
             res.status(404).json({ success: false, error: 'Image not found' });
         }
@@ -143,6 +148,8 @@ router.get('/locations/:landmarkid', async (req, res) => {
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
+
+// -------------------- Performing Images GET Request using landmark ID but with links
   
 router.get('/locations/:landmarkid/images', async (req, res) => {
     console.log(req.params)
@@ -172,13 +179,14 @@ router.get('/locations/images/:image_src', async (req, res) => {
     const image_src = req.params.image_src;
 
     try {
-        res.sendFile(image_src, { root: 'public/images' });
+        res.sendFile(image_src, { root: 'assets/LandmarkImages' });
 
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
+
 
   
 module.exports = router;
