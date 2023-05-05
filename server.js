@@ -11,7 +11,14 @@ const homeRoutes = require('./routes/api/home.js');
 const qrRoutes = require('./routes/api/qrgeneration.js');
 const scanLakbay = require('./routes/api/scanlakbay.js');
 const lakbayContents = require('./routes/api/lakbaycontents.js');
-const manageContents = require('./routes/api/Manage.js')
+const manageContents = require('./routes/api/Manage.js');
+const maps = require('./routes/api/maps.js');
+const bucketlist = require('./routes/api/bucketlist.js');
+
+
+
+const serverAddress = 'http://localhost:7000';
+
 
 // CORS configuration
 app.use(cors({
@@ -21,38 +28,6 @@ app.use(cors({
   credentials: true,
   secure: true
 }));
-
-
-
-// // this allows cross-origin XMLHttpRequest (XHR) request
-// app.use(function(req, res, next) {
-//     res.setHeader('Access-Control-Allow-Origin', 'https://192.168.1.12:8081');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//     res.setHeader('Access-Control-Allow-Credentials', true);
-//         // intercepts OPTIONS method
-//         if ('OPTIONS' === req.method) {
-//             // respond with 200
-//             res.sendStatus(200);
-//           } else {
-//             // move on
-//             next();
-//           }
-      
-//   });
-
-
-// // this enables CORS for all routes
-// app.use(cors({
-//     origin: ['https://192.168.1.12:8081'],
-//     allowedHeaders: ['Content-Type', 'Authorization'],
-// }));
-
-
-
-
-
-
 
 
 // init Middleware ---------------------
@@ -67,6 +42,8 @@ app.use('/LakbayScan', scanLakbay);
 app.use('/QR', qrRoutes);
 app.use('/Lakbay', lakbayContents);
 app.use('/Manage', manageContents);
+app.use('/maps', maps);
+app.use('/bucketlist', bucketlist);
 
 app.get('/', (req,res) => res.send('API is running'));
 // const PORT = process.env.PORT || 7000;
@@ -84,5 +61,4 @@ const PORT = process.env.PORT || 7000;
 const PORT2 = process.env.PORT || 8000;
 httpServer.listen(PORT, () => console.log(`HTTP Server started on port ${PORT}`));
 httpsServer.listen(PORT2, () => console.log(`HTTPS Server started on port ${PORT2}`));
-
 
