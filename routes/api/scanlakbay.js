@@ -73,6 +73,27 @@ router.post('/u/fetching/ratings', (req, res) => {
 
 })
 
+router.post('/u/fetching/review', (req, res) => {
+
+  console.log(req.body)
+  var landmarkid = req.body.landmarkid;
+
+  try{
+      
+      sqlQuery = `SELECT * FROM reviewTable WHERE landmark_id = ${landmarkid};`;
+      
+      dbConn.query(sqlQuery, function (error, results, fields) {
+          console.log(results)
+          res.status(200).json(results);
+      })
+
+  }catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+
+})
+
 router.post('/u/fetching', (req, res) => {
   console.log(req.body)
   var landmarkid = req.body.landmarkid;
@@ -97,6 +118,30 @@ router.post('/u/fetching', (req, res) => {
 
 })
 
+// ------------------------------- Search Landmark by name
+router.post('/u/search/landmark/name', (req, res) => {
+  console.log("checking", req.body)
+  var landmarkname = req.body.landmarkname;
+
+  try{
+      sqlQuery = `SELECT landmark_id, landmark_name, landmark_city, landmark_address, landmark_region, landmark_visits
+          FROM landmarktable WHERE landmark_name = "${landmarkname}"`;
+      
+      dbConn.query(sqlQuery, function (error, results, fields) {
+          
+          res.status(200).json(results);
+
+          console.log("results: ", results)
+      })
+
+  }catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+  
+
+})
+
 //-------------------- Fectching Paragraphs --------------------------------
 router.post('/u/fetching/paragraphs', (req, res) => {
   console.log(req.body)
@@ -104,7 +149,7 @@ router.post('/u/fetching/paragraphs', (req, res) => {
 
   try{
       
-      sqlQuery = `SELECT landmark_id, info_paragraph, info_order FROM landmarkInfoTable 
+      sqlQuery = `SELECT info_id, landmark_id, info_paragraph, info_order FROM landmarkInfoTable 
          WHERE landmark_id = "${landmarkid}" ORDER BY info_order`;
 
       dbConn.query(sqlQuery, function (error, results, fields) {

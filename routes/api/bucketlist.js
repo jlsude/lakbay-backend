@@ -38,14 +38,14 @@ router.post('/addingbucketlist', upload.single('bucketlistimage'), async (req, r
     console.log(req.body)
     console.log(req.file)
   
-    const bucketlistlocation = req.body.bucketlistlocation;
+
     const bucketlistname = req.body.bucketlistname;
     const bucketlistintro = req.body.bucketlistintro;
     const bucketlistimage = req.file.filename;
   
     try {
-      var sqlQuery = `INSERT INTO lakbayBucketListTable (bucketlist_location, bucketlist_name, bucketlist_intro, bucketlist_image) 
-                  VALUES ("${bucketlistlocation}", "${bucketlistname}", "${bucketlistintro}", "${bucketlistimage}");`
+      var sqlQuery = `INSERT INTO lakbayBucketListTable (bucketlist_name, bucketlist_intro, bucketlist_image) 
+                  VALUES ("${bucketlistname}", "${bucketlistintro}", "${bucketlistimage}");`
   
         dbConn.query(sqlQuery, function (error, results, fields) {
         if (error) throw error;
@@ -77,7 +77,22 @@ router.get('/allview/', async (req, res) => {
 });
 
 
+router.post('/search/bucketlist', async (req, res) => {
 
+  var keywords = req.body.keywords
+
+  try {
+    const sqlQuery = `SELECT *  FROM lakbayBucketListTable WHERE bucketlist_name LIKE '%${keywords}%'`;
+    dbConn.query(sqlQuery, function (error, results, fields) {
+      if (error) throw error;
+      
+      res.status(200).json(results);
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
 
 
 
@@ -99,7 +114,7 @@ router.get('/view/:bucketlistid', async (req, res) => {
           buckelistlocation: result.bucketlist_location,
           bucketlist_name: result.bucketlist_name,
           bucketlist_intro: result.bucketlist_intro,
-          url: `http://192.168.1.21:7000/bucketlist/view/image/${result.bucketlist_image}`
+          url: `http://localhost:7000/bucketlist/view/image/${result.bucketlist_image}`
         }));
         res.status(200).json(images);
       });
@@ -165,5 +180,36 @@ router.get('/view/locations/:bucketlistid', async (req, res) => {
       res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
+
+
+// ------------------------------ Delete bucketlist
+router.post('/delete/bucketlist', (req, res) => {
+  console.log(req.body)
+  var bucketlistid = req.body.bucketlistid;
+
+  try {
+
+      sqlQuery = `DELETE FROM locbucketlistTable
+        WHERE bucketlist_id = '${bucketlistid}';`
+
+          dbConn.query(sqlQuery, function (error, results, fields) {
+              if (error) throw error
+
+              sqlQuery2 = `DELETE FROM lakbayBucketListTable
+              WHERE bucketlist_id = '${bucketlistid}';`
+              dbConn.query(sqlQuery2, function (error, results, fields) {
+                if (error) throw error
+  
+                  res.status(200).json(results);
+            })
+          })
+      
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+})
+
+
 
 module.exports = router;

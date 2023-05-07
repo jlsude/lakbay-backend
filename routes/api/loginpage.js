@@ -20,7 +20,8 @@ router.post('/u/login/signup', (req, res) => {
 	var userlastname = req.body.userlastname;
 	var userbirthdate = req.body.userbirthdate;
 	var usercity = req.body.usercity;
-	var message = req.body.message
+	var userrole = req.body.userrole;
+	var message = req.body.message;
 
 	try {
 	// Check if the email already exists in the database
@@ -45,7 +46,7 @@ router.post('/u/login/signup', (req, res) => {
 		sqlQuery2 = `INSERT INTO usertable(user_email, user_password, user_firstname, 
 					user_lastname, user_birthdate, user_city, user_role)
 					VALUES ("${useremail}",  "${userpassword}",  "${userfirstname}",  
-					"${userlastname}",  "${userbirthdate}",  "${usercity}", "ADMIN")`
+					"${userlastname}",  "${userbirthdate}",  "${usercity}", "${userrole}")`
 
 		dbConn.query(sqlQuery2, function (error, results, fields) {
 			if (error) {
@@ -54,7 +55,74 @@ router.post('/u/login/signup', (req, res) => {
 			}
 			console.log(results.insertId);
 			userId = results.insertId
-			res.status(200).json({ success: true, userId: userId });
+			// res.status(200).json({ success: true, userId: userId });
+
+				var useremail = req.body.useremail;
+				var userpassword = req.body.userpassword;
+			
+				try {
+			
+				sqlQuery3 = `SELECT * FROM usertable  WHERE user_email ="${useremail}" 
+					AND user_password = "${userpassword}"`;
+			
+				dbConn.query(sqlQuery3, function (error, results, fields) {
+					if (error) {
+						console.error(error);
+						console.log("An error occurred during login.")
+						return res.status(500).json({ success: false, message: 'An error occurred during login.' });
+			
+					}
+			
+					if (results.length === 0) {
+					console.log("Invalid email or password.")
+					return res.status(401).json({
+						success: false,
+						message: 'Invalid email or password.'
+					});
+			
+					}
+					console.log(results, `A user logged in`);
+					var row = results[0];
+			
+					var user_id = row.user_id;
+					var user_email = row.user_email;
+					var user_firstname = row.user_firstname;
+					var user_lastname = row.user_lastname;
+					var user_role = row.user_role;
+					var user_city = row.user_city;
+			
+					var data = {
+					user_id: row.user_id,
+					user_email: row.user_email,
+					user_firstname: row.user_firstname,
+					user_lastname: row.user_lastname,
+					user_role: row.user_role,
+					user_city: row.user_city
+					}
+			
+					// Token creation
+					token = jwt.sign(
+						{ data: data },
+						process.env.SECRET_TOKEN,
+						{ expiresIn: '1h' }
+					)
+					
+					return res.status(200).json({
+						success: true,
+						message: 'Login successful.',
+						data: data.user_email,
+						token: token
+					})
+					
+				})
+				}
+				catch (error) {
+					console.error(error);
+					console.log("An error occurred during login.")
+					return res.status(500).json({ success: false, message: '' });
+				}
+
+
 		});
 		}
 	});

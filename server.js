@@ -10,7 +10,7 @@ const loginpageRoutes = require('./routes/api/loginpage.js');
 const homeRoutes = require('./routes/api/home.js');
 const qrRoutes = require('./routes/api/qrgeneration.js');
 const scanLakbay = require('./routes/api/scanlakbay.js');
-const lakbayContents = require('./routes/api/lakbaycontents.js');
+
 const manageContents = require('./routes/api/Manage.js');
 const maps = require('./routes/api/maps.js');
 const bucketlist = require('./routes/api/bucketlist.js');
@@ -18,7 +18,7 @@ const bucketlist = require('./routes/api/bucketlist.js');
 
 
 const serverAddress = 'http://localhost:7000';
-
+module.exports = serverAddress;
 
 // CORS configuration
 app.use(cors({
@@ -40,7 +40,6 @@ app.use('/LakbayScan', scanLakbay);
 
 // admin api
 app.use('/QR', qrRoutes);
-app.use('/Lakbay', lakbayContents);
 app.use('/Manage', manageContents);
 app.use('/maps', maps);
 app.use('/bucketlist', bucketlist);

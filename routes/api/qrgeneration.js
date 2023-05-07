@@ -46,36 +46,97 @@ router.post('/a/generate', async (req, res) => {
 //@routes GET http:localhost:7000/QR/a/qrcode/:qr_id
 //@desc Fetch qr code from database
 //@access only to managers and administrators
-
 router.get('/a/qrcode/:qr_id', async (req, res) => {
-    console.log(req.params)
-    const qrId = req.params.qr_id;
-  
-    try {
-      const sql = `SELECT qr_codecontent FROM qrtable WHERE qr_id = ${qrId}`;
-      dbConn.query(sql, (err, result) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({ success: false, error: 'Internal server error' });
-        } else {
-          if (result.length > 0) {
-            const qrcodecontent = result[0].qr_codecontent;
+  console.log(req.params)
+  const qrId = req.params.qr_id;
 
-            const qrCode = qr.image(qrcodecontent, { type: 'png', margin: 2, size: 10 });
-            res.setHeader('Content-type', 'image/png');
-            qrCode.pipe(res);
-          } else {
-            res.status(404).json({ success: false, error: 'QR code not found' });
-          }
+  try {
+    const sql = `SELECT qr_codecontent FROM qrtable WHERE qr_id = ${qrId}`;
+    dbConn.query(sql, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+      } else {
+        if (result.length > 0) {
+          const qrcodecontent = result[0].qr_codecontent;
+
+          const filename = req.query.filename || 'qrcode.png';
+          res.setHeader('Content-type', 'image/png');
+          res.setHeader('Content-disposition', `attachment; filename="${qrcodecontent}.png"`);
+          const qrCode = qr.image(qrcodecontent, { type: 'png', margin: 2, size: 10 });
+          qrCode.pipe(res);
+        } else {
+          res.status(404).json({ success: false, error: 'QR code not found' });
         }
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ success: false, error: 'Internal server error' });
-    }
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
 });
 
+// router.get('/a/qrcode/:qr_id', async (req, res) => {
+//     console.log(req.params)
+//     const qrId = req.params.qr_id;
+  
+//     try {
+//       const sql = `SELECT qr_codecontent FROM qrtable WHERE qr_id = ${qrId}`;
+//       dbConn.query(sql, (err, result) => {
+//         if (err) {
+//           console.log(err);
+//           res.status(500).json({ success: false, error: 'Internal server error' });
+//         } else {
+//           if (result.length > 0) {
+//             const qrcodecontent = result[0].qr_codecontent;
 
+//             const filename = req.query.filename || 'qrcode.png';
+
+//             const qrCode = qr.image(qrcodecontent, { type: 'png', margin: 2, size: 10 });
+//             res.setHeader('Content-disposition', `attachment; filename="${filename}"`);
+//             res.setHeader('Content-type', 'image/png');
+//             qrCode.pipe(res);
+//           } else {
+//             res.status(404).json({ success: false, error: 'QR code not found' });
+//           }
+//         }
+//       });
+//     } catch (error) {
+//       console.log(error);
+//       res.status(500).json({ success: false, error: 'Internal server error' });
+//     }
+// });
+
+//CHECKs qr code content
+router.post('/a/checker', async (req, res) => {
+  console.log(req.body)
+  var qrcodecontent = req.body.qrcodecontent
+  try{
+    sqlQuery = `SELECT qr_id, qr_codecontent FROM qrtable WHERE qr_codecontent = "${qrcodecontent}"`;
+    dbConn.query(sqlQuery, (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({ success: false, message: 'An error occurred' });
+      }
+      if (results.length > 0) {
+        // If email exists, send response to frontend indicating that the email has already been taken
+    
+        return res.status(400).json({
+          success: false,
+          message: 'QR code string already exists in the database'
+        });
+      } else{
+        return res.status(200).json({
+          success: true,
+          message: 'QR code string does NOT exists yet in the datase'
+        })
+      }
+    })
+  }
+  catch{
+
+  }
+});
 
 
   

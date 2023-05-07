@@ -38,13 +38,13 @@ router.post('/adding', upload.single('mapimagesrc'), async (req, res) => {
     console.log(req.body)
     console.log(req.file)
   
-    const maplocationcity = req.body.maplocationcity;
+    const maplocation = req.body.maplocation;
     const mapkeywords = req.body.mapkeywords;
     const mapimagesrc = req.file.filename;
   
     try {
-      var sqlQuery = `INSERT INTO maptable (map_locationcity, map_keywords, map_image) 
-                  VALUES ("${maplocationcity}", "${mapkeywords}", "${mapimagesrc}");`
+      var sqlQuery = `INSERT INTO maptable (map_location, map_keywords, map_image) 
+                  VALUES ("${maplocation}", "${mapkeywords}", "${mapimagesrc}");`
   
         dbConn.query(sqlQuery, function (error, results, fields) {
         if (error) throw error;
@@ -63,7 +63,7 @@ router.get('/view/:mapid', async (req, res) => {
     const mapid = req.params.mapid;
   
     try {
-      const sqlQuery = `SELECT map_id, map_locationcity, map_keywords, map_image  FROM mapTable WHERE map_id = '${mapid}';`;
+      const sqlQuery = `SELECT map_id, map_location, map_keywords, map_image  FROM mapTable WHERE map_id = '${mapid}';`;
       dbConn.query(sqlQuery, function (error, results, fields) {
         if (error) throw error;
         const images = results.map((result) => ({
@@ -71,7 +71,7 @@ router.get('/view/:mapid', async (req, res) => {
           map_locationcity: result.map_locationcity,
           map_keywords: result.map_keywords,
 
-          url: `http://192.168.1.21:7000/maps/view/image/${result.map_image}`
+          url: `http://localhost:7000/maps/view/image/${result.map_image}`
         }));
         res.status(200).json(images);
       });
@@ -97,20 +97,20 @@ router.get('/view/:mapid', async (req, res) => {
 
 
 // ----------------------------------- Searching maps by keywords
-router.get('/search/keywords', async (req, res) => {
-
-    const keywords = req.body.keywords;
+router.post('/search/keywords', async (req, res) => {
+    console.log(req.body)
+    var keywords = req.body.keywords;
   
     try {
-      const sqlQuery = `SELECT map_id, map_locationcity, map_image FROM mapTable WHERE map_keywords LIKE '%${keywords}%';`
+      const sqlQuery = `SELECT map_id, map_location, map_image FROM mapTable WHERE map_keywords LIKE '%${keywords}%';`
       dbConn.query(sqlQuery, function (error, results, fields) {
         if (error) throw error;
         const images = results.map((result) => ({
           map_id: result.map_id,
-          map_locationcity: result.map_locationcity,
+          map_location: result.map_location,
           map_keywords: result.map_keywords,
 
-          url: `http://192.168.1.21:7000/maps/view/image/${result.map_image}`
+          url: `http://localhost:7000/maps/view/image/${result.map_image}`
         }));
         res.status(200).json(images);
       });
@@ -130,10 +130,10 @@ router.get('/allview', async (req, res) => {
       if (error) throw error;
       const images = results.map((result) => ({
         map_id: result.map_id,
-        map_locationcity: result.map_locationcity,
+        map_location: result.map_location,
         map_keywords: result.map_keywords,
 
-        url: `http://192.168.1.21:7000/maps/view/image/${result.map_image}`
+        url: `http://localhost:7000/maps/view/image/${result.map_image}`
       }));
       res.status(200).json(images);
     });
@@ -143,4 +143,22 @@ router.get('/allview', async (req, res) => {
   }
 });
 
+
+router.post('/deleting/map', (req, res) => {
+  var mapid = req.body.mapid;
+
+  try {
+    
+    sqlQuery = `DELETE FROM mapTable WHERE map_id = '${mapid}'`
+    dbConn.query(sqlQuery, function (error, results, fields) {
+      if (error) throw error;
+      res.status(200).json(results);
+    });
+
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+})
 module.exports = router;

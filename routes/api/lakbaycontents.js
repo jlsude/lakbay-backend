@@ -26,8 +26,9 @@ router.post('/a/addlandmark', (req, res) =>{
         
         dbConn.query(sqlQuery, function (error, results, fields) {
             if (error) throw error;
-            res.status(200).json(results);
-    
+            console.log("heloooooooooooooooooo")
+            res.status(200).json({ success: true, message: 'Register Successful', results });
+
         });
     }catch (error) {
         console.log(error);
