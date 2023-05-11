@@ -54,7 +54,7 @@ router.post('/a/add/landmarkinfo', (req, res) =>{
 
     try{
         sqlQuery = `INSERT INTO landmarkInfoTable(landmark_id, info_paragraph, info_order) 
-                VALUES (${landmarkid}, "${infoparagraph}", "")`
+                VALUES (${landmarkid}, "${infoparagraph}", "0")`
         dbConn.query(sqlQuery, function (error, results, fields) {
             if (error) throw error;
             res.status(200).json(results);
@@ -86,14 +86,84 @@ router.get('/a/get/all/landmarks', (req, res) =>{
       
 
 })
+// ------------------------------------------- GET ALL LAndmark per Manager
+
+router.get('/m/get/all/landmarks', (req, res) =>{
+
+    const authorizationHeader = req.headers.authorization;
+    if (!authorizationHeader) {
+        res.status(401).json({ success: false, msg: 'Authorization header is missing' });
+        return;
+    }
+
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token){
+        res.status(200).json({success: false, msg: 'Error, Token was not found'});
+    }
+    const decodedToken = jwt.verify(token,process.env.SECRET_TOKEN);
+
+    console.log(decodedToken.data['user_id']);
+    console.log("Manager area: ", decodedToken.data['user_city']);
+
+    try{
+        sqlQuery = `SELECT * FROM landmarktable WHERE landmark_city = "${decodedToken.data['user_city']}"`;
+        dbConn.query(sqlQuery, function (error, results, fields) {
+            
+            res.status(200).json(results);
+    
+        });
+    }catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+      
+
+})
 
 // ------------------------------------------ search Landmarks
 router.post('/a/search/landmarks', (req, res) =>{
     console.log('Searching langdmark')
     var keywords = req.body.keywords;
 
+
+
     try{
         sqlQuery = `SELECT * FROM landmarktable WHERE landmark_name LIKE '%${keywords}%'`;
+        dbConn.query(sqlQuery, function (error, results, fields) {
+            if (error) throw error;
+            res.status(200).json(results);
+    
+        });
+    }catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+      
+
+})
+
+router.post('/m/search/landmarks', (req, res) =>{
+    console.log('Searching langdmark')
+    var keywords = req.body.keywords;
+
+    const authorizationHeader = req.headers.authorization;
+    if (!authorizationHeader) {
+        res.status(401).json({ success: false, msg: 'Authorization header is missing' });
+        return;
+    }
+
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token){
+        res.status(200).json({success: false, msg: 'Error, Token was not found'});
+    }
+    const decodedToken = jwt.verify(token,process.env.SECRET_TOKEN);
+
+    console.log(decodedToken.data['user_id']);
+    console.log("Manager area: ", decodedToken.data['user_city']);
+
+    try{
+        sqlQuery = `SELECT * FROM landmarktable WHERE landmark_city = "${decodedToken.data['user_city']}" 
+            AND landmark_name LIKE '%${keywords}%'`;
         dbConn.query(sqlQuery, function (error, results, fields) {
             if (error) throw error;
             res.status(200).json(results);

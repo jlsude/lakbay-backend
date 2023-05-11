@@ -22,8 +22,8 @@ router.post('/a/generate', async (req, res) => {
       const qrCodeBuffer = qr.imageSync(qrcodecontent, { type: 'png', margin: 2, size: 10 });
       const qrCodeImage = qrCodeBuffer.toString('base64');
   
-      const sql = `INSERT INTO qrtable(qr_codecontent, qr_landmark, qr_city, qr_codeimg) 
-                   VALUES ("${qrcodecontent}", "${qrlandmark}", "${qrcity}", "${qrCodeImage}")`;
+      const sql = `INSERT INTO qrtable(qr_codecontent, qr_landmark, qr_city) 
+                   VALUES ("${qrcodecontent}", "${qrlandmark}", "${qrcity}")`;
   
       dbConn.query(sql, (err, result) => {
         if (err) {

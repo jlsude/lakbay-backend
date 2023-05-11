@@ -58,9 +58,9 @@ router.post('/adding', upload.single('mapimagesrc'), async (req, res) => {
 });
 
 // -------------------------------- GET request
-router.get('/view/:mapid', async (req, res) => {
-    console.log(req.params)
-    const mapid = req.params.mapid;
+router.post('/get/one', async (req, res) => {
+    console.log(req.body)
+    const mapid = req.body.mapid;
   
     try {
       const sqlQuery = `SELECT map_id, map_location, map_keywords, map_image  FROM mapTable WHERE map_id = '${mapid}';`;
@@ -68,7 +68,7 @@ router.get('/view/:mapid', async (req, res) => {
         if (error) throw error;
         const images = results.map((result) => ({
           map_id: result.map_id,
-          map_locationcity: result.map_locationcity,
+          map_location: result.map_location,
           map_keywords: result.map_keywords,
 
           url: `http://localhost:7000/maps/view/image/${result.map_image}`
