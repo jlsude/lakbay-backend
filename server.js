@@ -17,8 +17,7 @@ const bucketlist = require('./routes/api/bucketlist.js');
 
 
 
-const serverAddress = 'http://localhost:7000';
-module.exports = serverAddress;
+
 
 // CORS configuration
 app.use(cors({

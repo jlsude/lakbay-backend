@@ -43,6 +43,7 @@ router.get('/u/userprofile', (req, res) => {
 //@access unique to users
 
 router.get('/u/userhistory', (req, res) => {
+  console.log("GET history")
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
       res.status(401).json({ success: false, msg: 'Authorization header is missing' });
@@ -58,10 +59,11 @@ router.get('/u/userhistory', (req, res) => {
     console.log(decodedToken.data['user_id']);
     console.log(decodedToken.data['user_email']);
 
-    sqlQuery = `SELECT landmarkTable.landmark_id, landmarkTable.landmark_name, landmarkTable.landmark_city, 
-                landmarkTable.landmark_address, landmarkTable.landmark_region, landmarkTable.landmark_visits,
-                userhistorytable.userhistory_id FROM userHistoryTable INNER JOIN landmarkTable ON userHistoryTable.landmark_id 
-                = landmarkTable.landmark_id WHERE userHistoryTable.user_id = "${decodedToken.data['user_id']}"`;
+    sqlQuery = `SELECT userhistorytable.userhistory_id, landmarkTable.landmark_id, landmarkTable.landmark_name, landmarkTable.landmark_city, 
+                landmarkTable.landmark_address, landmarkTable.landmark_region, landmarkTable.landmark_visits
+                 FROM userHistoryTable INNER JOIN landmarkTable ON userHistoryTable.landmark_id 
+                = landmarkTable.landmark_id WHERE userHistoryTable.user_id = "${decodedToken.data['user_id']}" 
+                ORDER BY userhistorytable.userhistory_id`;
     dbConn.query(sqlQuery, function (error, results, fields) {
         if (error) throw error;
         res.status(200).json(results);

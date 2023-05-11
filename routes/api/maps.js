@@ -71,7 +71,7 @@ router.post('/get/one', async (req, res) => {
           map_location: result.map_location,
           map_keywords: result.map_keywords,
 
-          url: `http://localhost:7000/maps/view/image/${result.map_image}`
+          url: `${process.env.SERVER_ADDRESS}/maps/view/image/${result.map_image}`
         }));
         res.status(200).json(images);
       });
@@ -110,7 +110,7 @@ router.post('/search/keywords', async (req, res) => {
           map_location: result.map_location,
           map_keywords: result.map_keywords,
 
-          url: `http://localhost:7000/maps/view/image/${result.map_image}`
+          url: `${process.env.SERVER_ADDRESS}/maps/view/image/${result.map_image}`
         }));
         res.status(200).json(images);
       });
@@ -133,7 +133,7 @@ router.get('/allview', async (req, res) => {
         map_location: result.map_location,
         map_keywords: result.map_keywords,
 
-        url: `http://localhost:7000/maps/view/image/${result.map_image}`
+        url: `${process.env.SERVER_ADDRESS}/maps/view/image/${result.map_image}`
       }));
       res.status(200).json(images);
     });

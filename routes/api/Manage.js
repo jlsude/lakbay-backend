@@ -7,10 +7,14 @@ const { route } = require('./maps');
 
 
 
+
+
+
 // ---------------------------- Adding Landmark ------------------------------------------------
 
 router.post('/a/add/landmark', (req, res) =>{
     console.log(req.body)
+    
     var qrid = req.body.qrid;
     var landmarkname = req.body.landmarkname;
     var landmarkcity = req.body.landmarkcity;
@@ -259,7 +263,8 @@ router.get('/locations/:landmarkid', async (req, res) => {
 router.get('/locations/:landmarkid/images', async (req, res) => {
     console.log(req.params)
     const landmarkid = req.params.landmarkid;
-  
+
+
     try {
       const sqlQuery = `SELECT image_id, landmark_id, image_src, image_caption FROM imagetable WHERE landmark_id = '${landmarkid}';`;
       dbConn.query(sqlQuery, function (error, results, fields) {
@@ -268,7 +273,8 @@ router.get('/locations/:landmarkid/images', async (req, res) => {
           image_id: result.image_id,
           landmark_id: result.landmark_id,
           caption: result.image_caption,
-          url: `http://localhost:7000/manage/locations/images/${result.image_src}`
+          url: `${process.env.SERVER_ADDRESS}/manage/locations/images/${result.image_src}`
+          
         }));
         res.status(200).json(images);
       });

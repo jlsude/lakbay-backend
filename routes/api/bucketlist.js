@@ -114,7 +114,7 @@ router.get('/view/:bucketlistid', async (req, res) => {
           buckelistlocation: result.bucketlist_location,
           bucketlist_name: result.bucketlist_name,
           bucketlist_intro: result.bucketlist_intro,
-          url: `http://localhost:7000/bucketlist/view/image/${result.bucketlist_image}`
+          url: `${process.env.SERVER_ADDRESS}/bucketlist/view/image/${result.bucketlist_image}`
         }));
         res.status(200).json(images);
       });
