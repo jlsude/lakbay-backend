@@ -356,8 +356,9 @@ router.post('/delete/landmark', (req, res) => {
         const sqlQuery4 = `DELETE FROM lakbayBucketListTable WHERE bucketlist_id IN (SELECT bucketlist_id FROM locbucketlistTable WHERE landmark_id = ${landmarkid})`;
         const sqlQuery5 = `DELETE FROM userHistoryTable WHERE landmark_id = ${landmarkid}`;
         const sqlQuery6 = `DELETE FROM reviewTable WHERE landmark_id = ${landmarkid}`;
+
         const sqlQuery7 = `DELETE FROM landmarkTable WHERE landmark_id = ${landmarkid}`;
-        const sqlQuery8 = `DELETE FROM qrTable WHERE qr_id = (SELECT qr_id FROM landmarkTable WHERE landmark_id = ${landmarkid})`;
+       
         
         dbConn.query(sqlQuery1, function (error, results, fields) {
             if (error) throw error;
@@ -377,13 +378,26 @@ router.post('/delete/landmark', (req, res) => {
                             dbConn.query(sqlQuery6, function (error, results, fields) {
                                 if (error) throw error;
                                 
-                                dbConn.query(sqlQuery7, function (error, results, fields) {
+                                sqlQuerygetQRID = `SELECT qr_id FROM landmarkTable WHERE landmark_id = ${landmarkid}`;
+
+                                
+
+                                dbConn.query(sqlQuerygetQRID, function (error, results, fields) {
                                     if (error) throw error;
-                                    
-                                    dbConn.query(sqlQuery8, function (error, results, fields) {
+                                    console.log(results)
+                                    var deleteqrid = results[0].qr_id
+                                    console.log("Data qrid",deleteqrid)
+
+                                    dbConn.query(sqlQuery7, function (error, results, fields) {
                                         if (error) throw error;
                                         
-                                        res.status(200).json(results);
+                                        
+                                        const sqlQuery8 = `DELETE FROM qrTable WHERE qr_id = "${deleteqrid}"`;
+                                        dbConn.query(sqlQuery8, function (error, results, fields) {
+                                            if (error) throw error;
+                                            console.log(results)
+                                            res.status(200).json(results);
+                                        });
                                     });
                                 });
                             });
